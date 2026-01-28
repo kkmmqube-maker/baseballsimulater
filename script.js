@@ -15,6 +15,7 @@ for (let i = 1; i <= 9; i++) {
     <td><input id="hbp${i}" value="9"></td>
     <td><input id="so${i}" value="133"></td>
     <td><input id="sh${i}" value="2"></td>
+    <td id="kwRC${i}">-</td>
   `;
   tbody.appendChild(row);
 }
@@ -34,6 +35,7 @@ function applyMLB2025Avg() {
     document.getElementById(`so${i}`).value = 133;
     document.getElementById(`sh${i}`).value = 2;
   }
+  updateKwRC(); // 적용 후 kwRC+ 갱신
 }
 
 /***********************
@@ -91,67 +93,78 @@ function simulateInning(batterIndex, probs) {
   let bases = [0,0,0];
   let score = 0;
 
-  while(outs < 3) {
+  while(outs < 3){
     const batter = batterIndex % 9;
     batterIndex++;
     const event = plateAppearance(probs[batter]);
     let newBases = [0,0,0];
 
-    if(event === "single") {
+    if(event === "single"){
       if(bases[2]) score++;
       if(bases[1]) {
         if(Math.random() < RUN_PROB.single_2B_to_home[outs]) score++;
-        else newBases[2] = 1;
+        else newBases[2]=1;
       }
-      if(bases[0]) {
-        if(Math.random() < RUN_PROB.single_1B_to_3B[outs]) newBases[2] = 1;
-        else newBases[1] = 1;
+      if(bases[0]){
+        if(Math.random() < RUN_PROB.single_1B_to_3B[outs]) newBases[2]=1;
+        else newBases[1]=1;
       }
-      newBases[0] = 1;
-    }
-    else if(event === "double") {
+      newBases[0]=1;
+    } else if(event === "double"){
       if(bases[2]) score++;
       if(bases[1]) score++;
-      if(bases[0]) {
+      if(bases[0]){
         if(Math.random() < RUN_PROB.double_1B_to_home[outs]) score++;
-        else newBases[2] = 1;
+        else newBases[2]=1;
       }
-      newBases[1] = 1;
-    }
-    else if(event === "triple") {
+      newBases[1]=1;
+    } else if(event === "triple"){
       score += bases[0]+bases[1]+bases[2];
-      newBases[2] = 1;
-    }
-    else if(event === "homer") {
+      newBases[2]=1;
+    } else if(event === "homer"){
       score += bases[0]+bases[1]+bases[2]+1;
-    }
-    else if(["walk","hbp"].includes(event)) {
+    } else if(["walk","hbp"].includes(event)){
       if(bases[2] && bases[1] && bases[0]) score++;
       newBases = [1,bases[0],bases[1]];
-    }
-    else if(event === "sacBunt") {
+    } else if(event === "sacBunt"){
       outs++;
       if(bases[1]) newBases[2]=1;
       if(bases[0]) newBases[1]=1;
-    }
-    else {
+    } else {
       outs++;
     }
-
     bases = newBases;
   }
-
   return {score, batterIndex};
 }
 
 /***********************
  * kwRC+ 계산식
  ***********************/
-function calcKwRC(score) {
+function calcKwRC(score){
   const delta = score - 3.36;
   const deltaNorm = delta/0.44;
-  const kwrc = 100 + Math.sign(delta)*Math.pow(Math.abs(deltaNorm),1.05)*100;
+  const kwrc = 100 + Math.sign(delta) * Math.pow(Math.abs(deltaNorm),1.05) * 100;
   return kwrc.toFixed(1);
+}
+
+/***********************
+ * 각 타자 kwRC+ 업데이트
+ ***********************/
+function updateKwRC(){
+  for(let i=1;i<=9;i++){
+    const pa = Number(document.getElementById(`pa${i}`).value);
+    const events = Number(document.getElementById(`s1_${i}`).value) +
+                   Number(document.getElementById(`s2_${i}`).value) +
+                   Number(document.getElementById(`s3_${i}`).value) +
+                   Number(document.getElementById(`hr${i}`).value) +
+                   Number(document.getElementById(`bb${i}`).value) +
+                   Number(document.getElementById(`hbp${i}`).value) +
+                   Number(document.getElementById(`so${i}`).value) +
+                   Number(document.getElementById(`sh${i}`).value);
+    const avgScore = (events / pa) * 3.36; // 간단 근사 기대득점
+    document.getElementById(`kwRC${i}`).innerText = calcKwRC(avgScore);
+  }
 }
 
 /***********************
@@ -160,7 +173,7 @@ function calcKwRC(score) {
 let totalScore = 0;
 let runCount = 0;
 
-function runSimulation() {
+function runSimulation(){
   const probs = [];
   for(let i=1;i<=9;i++) probs.push(buildProb(i));
 
@@ -178,7 +191,10 @@ function runSimulation() {
 
   document.getElementById("lastResult").innerText = `이번 실행 결과: ${gameScore}`;
   document.getElementById("countResult").innerText = `실행 횟수: ${runCount}`;
-  document.getElementById("avgResult").innerText = `누적 평균: ${(totalScore/runCount).toFixed(2)} / kwRC+: ${calcKwRC(totalScore/runCount)}`;
+  const avg = totalScore/runCount;
+  document.getElementById("avgResult").innerText = `누적 평균: ${avg.toFixed(2)} / kwRC+: ${calcKwRC(avg)}`;
+
+  updateKwRC(); // 각 타자별 kwRC+ 갱신
 }
 
 function runSimulation100(){
@@ -188,8 +204,8 @@ function runSimulation100(){
 function resetAverage(){
   totalScore = 0;
   runCount = 0;
-  document.getElementById("avgResult").innerText = "누적 평균: -";
+  document.getElementById("avgResult").innerText = "누적 평균: - / kwRC+: -";
   document.getElementById("countResult").innerText = "실행 횟수: 0";
   document.getElementById("lastResult").innerText = "이번 실행 결과: -";
+  updateKwRC();
 }
-
