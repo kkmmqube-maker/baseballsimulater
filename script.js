@@ -61,7 +61,6 @@ function buildProb(i) {
     probs.push([acc, k]);
   }
 
-  // 일반 아웃
   probs.push([1, "out"]);
   return probs;
 }
@@ -92,11 +91,9 @@ function simulateInning(batterIndex, probs) {
     const event = plateAppearance(probs[batter]);
     let newBases = [0, 0, 0];
 
-    // 삼진
     if (event === "strikeout") {
       outs++;
     }
-    // 더블플레이
     else if ((outs === 0 || outs === 1) && bases[0] && Math.random() < RUN_PROB.doublePlayProb) {
       outs += 2;
       bases[0] = 0;
@@ -104,7 +101,6 @@ function simulateInning(batterIndex, probs) {
       if (bases[2]) score++;
       continue;
     }
-    // 단타
     else if (event === "single") {
       if (bases[2]) score++;
       if (bases[1]) {
@@ -117,7 +113,6 @@ function simulateInning(batterIndex, probs) {
       }
       newBases[0] = 1;
     }
-    // 2루타
     else if (event === "double") {
       if (bases[2]) score++;
       if (bases[1]) score++;
@@ -127,22 +122,18 @@ function simulateInning(batterIndex, probs) {
       }
       newBases[1] = 1;
     }
-    // 3루타
     else if (event === "triple") {
       score += bases[0] + bases[1] + bases[2];
       newBases[2] = 1;
     }
-    // 홈런
     else if (event === "homer") {
       score += bases[0] + bases[1] + bases[2] + 1;
     }
-    // 볼넷, 사구, 희생번트
     else if (["walk","hbp","sacBunt"].includes(event)) {
       if (bases[0] && bases[1] && bases[2]) score++;
       newBases = [1, bases[0], bases[1]];
       if (event === "sacBunt") outs++;
     }
-    // 일반 아웃
     else {
       outs++;
       if (bases[0] && Math.random() < RUN_PROB.out_1B_to_2B) newBases[1] = 1;
@@ -165,7 +156,7 @@ function simulateInning(batterIndex, probs) {
 let cumulativeScore = 0;
 let cumulativeCount = 0;
 
-// 1회 실행
+// 1회 실행 버튼용
 function runSimulation() {
   const avg = runSimulationSingle();
   cumulativeScore += avg;
@@ -192,16 +183,21 @@ function runSimulationSingle() {
   return totalScore / 100;
 }
 
-// 100회 반복 실행
+// 100회 반복 실행 버튼용
 function runSimulation100Times() {
   let results = [];
   for (let i = 0; i < 100; i++) {
-    results.push(runSimulationSingle());
+    const avg = runSimulationSingle();
+    results.push(avg);
+    cumulativeScore += avg;   // 누적 평균 반영
+    cumulativeCount++;        // 실행 횟수 반영
   }
+
   const avg100 = results.reduce((a,b)=>a+b,0)/results.length;
 
   document.getElementById("lastResult").innerText = `100회 마지막 실행 결과: ${results[results.length-1].toFixed(2)} 점`;
-  document.getElementById("avgResult").innerText = `100회 평균: ${avg100.toFixed(2)} 점`;
+  document.getElementById("avgResult").innerText = `누적 평균: ${(cumulativeScore/cumulativeCount).toFixed(2)} 점`;
+  document.getElementById("countResult").innerText = `실행 횟수: ${cumulativeCount}`;
 }
 
 // 초기화
@@ -240,4 +236,5 @@ function applyMLB2025Avg() {
     document.getElementById(`sh_${i}`).value = MLB_2025_AVG.sh;
   }
 }
+
 
