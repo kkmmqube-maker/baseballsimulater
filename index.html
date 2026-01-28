@@ -10,3 +10,48 @@
 </body>
 </html>
 
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>MLB 득점 시뮬레이터</title>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    table { border-collapse: collapse; margin-bottom: 20px; }
+    th, td { border: 1px solid #ccc; padding: 4px; text-align: center; }
+    input { width: 60px; }
+    button { padding: 10px 20px; font-size: 16px; }
+  </style>
+</head>
+<body>
+
+<h1>MLB 확률 기반 득점 시뮬레이터</h1>
+<p>9이닝 × 100경기 평균 득점 계산</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>타순</th>
+      <th>PA</th>
+      <th>1B</th>
+      <th>2B</th>
+      <th>3B</th>
+      <th>HR</th>
+      <th>BB</th>
+      <th>HBP</th>
+      <th>SO</th>
+      <th>SH</th>
+      <th>BUNT</th>
+      <th>INT</th>
+    </tr>
+  </thead>
+  <tbody id="batters"></tbody>
+</table>
+
+<button onclick="runSimulation()">시뮬레이션 실행</button>
+
+<h2 id="result">결과: -</h2>
+
+<script src="script.js"></script>
+</body>
+</html>
