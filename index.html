@@ -2,36 +2,31 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>실험용 사이트</title>
-</head>
-<body>
-  <h1>Hello GitHub Pages 👋</h1>
-  <p>index.html이 정상적으로 작동 중입니다.</p>
-</body>
-</html>
-
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8">
   <title>MLB 득점 시뮬레이터</title>
   <style>
     body { font-family: Arial, sans-serif; }
-    table { border-collapse: collapse; margin-bottom: 20px; }
-    th, td { border: 1px solid #ccc; padding: 4px; text-align: center; }
-    input { width: 60px; }
-    button { padding: 10px 20px; font-size: 16px; }
+    table { border-collapse: collapse; margin-bottom: 15px; }
+    th, td { border: 1px solid #ccc; padding: 4px 6px; text-align: center; }
+    input { width: 55px; }
+    button { margin-right: 10px; padding: 6px 12px; }
   </style>
 </head>
 <body>
 
-<h1>MLB 확률 기반 득점 시뮬레이터</h1>
-<p>9이닝 × 100경기 평균 득점 계산</p>
+<h2>⚾ MLB 득점 시뮬레이터</h2>
+
+<button type="button" onclick="applyMLB2025Avg()">
+  2025 MLB 평균 적용
+</button>
+
+<button type="button" onclick="runSimulation()">
+  시뮬레이션 실행
+</button>
 
 <table>
   <thead>
     <tr>
-      <th>타순</th>
+      <th>#</th>
       <th>PA</th>
       <th>1B</th>
       <th>2B</th>
@@ -41,21 +36,17 @@
       <th>HBP</th>
       <th>SO</th>
       <th>SH</th>
-      <th>BUNT</th>
-      <th>INT</th>
+      <th>번트안타</th>
+      <th>타격방해</th>
     </tr>
   </thead>
   <tbody id="batters"></tbody>
 </table>
 
-<button onclick="runSimulation()">시뮬레이션 실행</button>
+<h3 id="result">결과: -</h3>
 
-<h2 id="result">결과: -</h2>
-
+<!-- ⭐ JS 파일 연결 (반드시 body 맨 아래) -->
 <script src="script.js"></script>
+
 </body>
 </html>
-<button type="button" onclick="applyMLB2025Avg()">
-  2025 MLB 평균 타선 적용
-</button>
-
