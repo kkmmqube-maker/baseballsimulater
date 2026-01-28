@@ -2,31 +2,25 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>MLB 득점 시뮬레이터</title>
+  <title>MLB 공격 시뮬레이터</title>
   <style>
-    body { font-family: Arial, sans-serif; }
-    table { border-collapse: collapse; margin-bottom: 15px; }
-    th, td { border: 1px solid #ccc; padding: 4px 6px; text-align: center; }
-    input { width: 55px; }
-    button { margin-right: 10px; padding: 6px 12px; }
+    table { border-collapse: collapse; }
+    td, th { border: 1px solid #ccc; padding: 4px; text-align: center; }
+    button { margin: 5px; }
   </style>
 </head>
 <body>
 
-<h2>⚾ MLB 득점 시뮬레이터</h2>
+<h2>MLB 공격 시뮬레이터</h2>
 
-<button type="button" onclick="applyMLB2025Avg()">
-  2025 MLB 평균 적용
-</button>
-
-<button type="button" onclick="runSimulation()">
-  시뮬레이션 실행
-</button>
+<button onclick="applyMLB2025Avg()">2025 MLB 평균 적용</button>
+<button onclick="runSimulation()">시뮬레이션 실행</button>
+<button onclick="resetAverage()">평균 초기화</button>
 
 <table>
   <thead>
     <tr>
-      <th>#</th>
+      <th>타순</th>
       <th>PA</th>
       <th>1B</th>
       <th>2B</th>
@@ -37,16 +31,16 @@
       <th>SO</th>
       <th>SH</th>
       <th>번트안타</th>
-      <th>타격방해</th>
+      <th>INT</th>
     </tr>
   </thead>
   <tbody id="batters"></tbody>
 </table>
 
-<h3 id="result">결과: -</h3>
+<h3 id="lastResult">이번 실행 결과: -</h3>
+<h3 id="avgResult">누적 평균: -</h3>
+<h3 id="countResult">실행 횟수: 0</h3>
 
-<!-- ⭐ JS 파일 연결 (반드시 body 맨 아래) -->
 <script src="script.js"></script>
-
 </body>
 </html>
