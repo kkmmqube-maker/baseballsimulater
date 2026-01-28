@@ -179,3 +179,36 @@ function runSimulation() {
   document.getElementById("result").innerText =
     `결과: 경기당 평균 득점 ${avg} 점`;
 }
+<script>
+/* =========================
+   2025 MLB 평균 (600 PA)
+   ========================= */
+const MLB_2025_AVG = {
+  pa: 600,
+  single: 86,
+  double: 25,
+  triple: 2,
+  hr: 19,
+  bb: 50,
+  hbp: 9,
+  so: 133,
+  sh: 2
+};
+
+/* =========================
+   전체 타순 적용
+   ========================= */
+function applyMLB2025Avg() {
+  for (let i = 1; i <= 9; i++) {
+    document.getElementById(`pa_${i}`).value = MLB_2025_AVG.pa;
+    document.getElementById(`single_${i}`).value = MLB_2025_AVG.single;
+    document.getElementById(`double_${i}`).value = MLB_2025_AVG.double;
+    document.getElementById(`triple_${i}`).value = MLB_2025_AVG.triple;
+    document.getElementById(`hr_${i}`).value = MLB_2025_AVG.hr;
+    document.getElementById(`bb_${i}`).value = MLB_2025_AVG.bb;
+    document.getElementById(`hbp_${i}`).value = MLB_2025_AVG.hbp;
+    document.getElementById(`so_${i}`).value = MLB_2025_AVG.so;
+    document.getElementById(`sh_${i}`).value = MLB_2025_AVG.sh;
+  }
+}
+</script>
