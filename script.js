@@ -35,7 +35,7 @@ function applyMLB2025Avg() {
     document.getElementById(`so${i}`).value = 133;
     document.getElementById(`sh${i}`).value = 2;
   }
-  updateKwRC(); // 적용 후 kwRC+ 갱신
+  updateKwRC();
 }
 
 /***********************
@@ -162,7 +162,7 @@ function updateKwRC(){
                    Number(document.getElementById(`hbp${i}`).value) +
                    Number(document.getElementById(`so${i}`).value) +
                    Number(document.getElementById(`sh${i}`).value);
-    const avgScore = (events / pa) * 3.36; // 간단 근사 기대득점
+    const avgScore = (events / pa) * 3.36;
     document.getElementById(`kwRC${i}`).innerText = calcKwRC(avgScore);
   }
 }
@@ -173,32 +173,34 @@ function updateKwRC(){
 let totalScore = 0;
 let runCount = 0;
 
-function runSimulation(){
+function runSimulation(){ runSimulationN(1); }
+function runSimulation100(){ runSimulationN(100); }
+
+function runSimulationN(n){
   const probs = [];
   for(let i=1;i<=9;i++) probs.push(buildProb(i));
 
   let batterIndex = 0;
   let gameScore = 0;
 
-  for(let inning=0;inning<9;inning++){
-    const res = simulateInning(batterIndex, probs);
-    gameScore += res.score;
-    batterIndex = res.batterIndex;
+  for(let i=0;i<n;i++){
+    for(let inning=0; inning<9; inning++){
+      const res = simulateInning(batterIndex, probs);
+      gameScore += res.score;
+      batterIndex = res.batterIndex;
+    }
   }
 
   totalScore += gameScore;
-  runCount++;
+  runCount += n;
+
+  const avg = totalScore / runCount;
 
   document.getElementById("lastResult").innerText = `이번 실행 결과: ${gameScore}`;
   document.getElementById("countResult").innerText = `실행 횟수: ${runCount}`;
-  const avg = totalScore/runCount;
   document.getElementById("avgResult").innerText = `누적 평균: ${avg.toFixed(2)} / kwRC+: ${calcKwRC(avg)}`;
 
-  updateKwRC(); // 각 타자별 kwRC+ 갱신
-}
-
-function runSimulation100(){
-  for(let i=0;i<100;i++) runSimulation();
+  updateKwRC();
 }
 
 function resetAverage(){
@@ -209,3 +211,4 @@ function resetAverage(){
   document.getElementById("lastResult").innerText = "이번 실행 결과: -";
   updateKwRC();
 }
+
