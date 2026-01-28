@@ -156,14 +156,12 @@ function simulateInning(batterIndex, probs) {
 let cumulativeScore = 0;
 let cumulativeCount = 0;
 
-// 1회 실행 버튼용
+// 단일 실행
 function runSimulation() {
   const avg = runSimulationSingle();
   cumulativeScore += avg;
   cumulativeCount++;
-  document.getElementById("lastResult").innerText = `이번 실행 결과: ${avg.toFixed(2)} 점`;
-  document.getElementById("avgResult").innerText = `누적 평균: ${(cumulativeScore/cumulativeCount).toFixed(2)} 점`;
-  document.getElementById("countResult").innerText = `실행 횟수: ${cumulativeCount}`;
+  updateUI(avg);
 }
 
 // 1회 100경기 × 9이닝
@@ -183,19 +181,23 @@ function runSimulationSingle() {
   return totalScore / 100;
 }
 
-// 100회 반복 실행 버튼용
+// 100회 반복 실행
 function runSimulation100Times() {
   let results = [];
   for (let i = 0; i < 100; i++) {
     const avg = runSimulationSingle();
     results.push(avg);
-    cumulativeScore += avg;   // 누적 평균 반영
-    cumulativeCount++;        // 실행 횟수 반영
   }
 
-  const avg100 = results.reduce((a,b)=>a+b,0)/results.length;
+  cumulativeScore += results.reduce((a,b)=>a+b,0);
+  cumulativeCount += 100;
 
-  document.getElementById("lastResult").innerText = `100회 마지막 실행 결과: ${results[results.length-1].toFixed(2)} 점`;
+  updateUI(results[results.length-1]);
+}
+
+// UI 업데이트 함수
+function updateUI(lastAvg) {
+  document.getElementById("lastResult").innerText = `이번 실행 결과: ${lastAvg.toFixed(2)} 점`;
   document.getElementById("avgResult").innerText = `누적 평균: ${(cumulativeScore/cumulativeCount).toFixed(2)} 점`;
   document.getElementById("countResult").innerText = `실행 횟수: ${cumulativeCount}`;
 }
@@ -208,9 +210,7 @@ function resetAverage() {
   document.getElementById("countResult").innerText = `실행 횟수: 0`;
 }
 
-/***********************
- * MLB 2025 평균 적용
- ***********************/
+// MLB 2025 평균 적용
 const MLB_2025_AVG = {
   pa: 600,
   single: 86,
@@ -236,5 +236,4 @@ function applyMLB2025Avg() {
     document.getElementById(`sh_${i}`).value = MLB_2025_AVG.sh;
   }
 }
-
 
