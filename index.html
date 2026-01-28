@@ -2,21 +2,20 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>MLB 공격 시뮬레이터</title>
+  <title>MLB 공격 시뮬레이터 (kwRC+)</title>
   <style>
     table { border-collapse: collapse; }
     td, th { border: 1px solid #ccc; padding: 4px; text-align: center; }
     button { margin: 5px; }
-    input[type=number] { width: 60px; }
   </style>
 </head>
 <body>
 
-<h2>MLB 공격 시뮬레이터</h2>
+<h2>MLB 공격 시뮬레이터 (kwRC+)</h2>
 
 <button onclick="applyMLB2025Avg()">2025 MLB 평균 적용</button>
 <button onclick="runSimulation()">시뮬레이션 실행</button>
-<button onclick="runSimulation100Times()">시뮬레이션 100회 실행</button>
+<button onclick="runSimulation100()">100회 시뮬레이션 실행</button>
 <button onclick="resetAverage()">평균 초기화</button>
 
 <table>
@@ -42,8 +41,5 @@
 <h3 id="countResult">실행 횟수: 0</h3>
 
 <script src="script.js"></script>
-
 </body>
 </html>
-
-
