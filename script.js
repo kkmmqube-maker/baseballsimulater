@@ -1,5 +1,11 @@
 /***********************
- * 타자 입력 UI 생성
+ * 전역 통계 변수
+ ***********************/
+let totalRuns = 0;
+let runCount = 0;
+
+/***********************
+ * 입력 UI 생성
  ***********************/
 const tbody = document.getElementById("batters");
 
@@ -8,15 +14,15 @@ for (let i = 1; i <= 9; i++) {
   row.innerHTML = `
     <td>${i}</td>
     <td><input id="pa${i}" value="600"></td>
-    <td><input id="s1_${i}" value="90"></td>
-    <td><input id="s2_${i}" value="30"></td>
-    <td><input id="s3_${i}" value="5"></td>
-    <td><input id="hr${i}" value="25"></td>
-    <td><input id="bb${i}" value="60"></td>
-    <td><input id="hbp${i}" value="5"></td>
-    <td><input id="so${i}" value="140"></td>
-    <td><input id="sh${i}" value="5"></td>
-    <td><input id="bunt${i}" value="5"></td>
+    <td><input id="s1_${i}" value="80"></td>
+    <td><input id="s2_${i}" value="25"></td>
+    <td><input id="s3_${i}" value="2"></td>
+    <td><input id="hr${i}" value="20"></td>
+    <td><input id="bb${i}" value="50"></td>
+    <td><input id="hbp${i}" value="9"></td>
+    <td><input id="so${i}" value="130"></td>
+    <td><input id="sh${i}" value="2"></td>
+    <td><input id="bunt${i}" value="2"></td>
     <td><input id="int${i}" value="0"></td>
   `;
   tbody.appendChild(row);
@@ -25,7 +31,7 @@ for (let i = 1; i <= 9; i++) {
 /***********************
  * 2025 MLB 평균 (600 PA)
  ***********************/
-const MLB_2025_AVG = {
+const MLB_2025 = {
   pa: 600,
   s1: 86,
   s2: 25,
@@ -35,29 +41,24 @@ const MLB_2025_AVG = {
   hbp: 9,
   so: 133,
   sh: 2,
-  bunt: 1,
+  bunt: 2,
   int: 0
 };
 
 function applyMLB2025Avg() {
   for (let i = 1; i <= 9; i++) {
-    setVal(`pa${i}`, MLB_2025_AVG.pa);
-    setVal(`s1_${i}`, MLB_2025_AVG.s1);
-    setVal(`s2_${i}`, MLB_2025_AVG.s2);
-    setVal(`s3_${i}`, MLB_2025_AVG.s3);
-    setVal(`hr${i}`, MLB_2025_AVG.hr);
-    setVal(`bb${i}`, MLB_2025_AVG.bb);
-    setVal(`hbp${i}`, MLB_2025_AVG.hbp);
-    setVal(`so${i}`, MLB_2025_AVG.so);
-    setVal(`sh${i}`, MLB_2025_AVG.sh);
-    setVal(`bunt${i}`, MLB_2025_AVG.bunt);
-    setVal(`int${i}`, MLB_2025_AVG.int);
+    document.getElementById(`pa${i}`).value = MLB_2025.pa;
+    document.getElementById(`s1_${i}`).value = MLB_2025.s1;
+    document.getElementById(`s2_${i}`).value = MLB_2025.s2;
+    document.getElementById(`s3_${i}`).value = MLB_2025.s3;
+    document.getElementById(`hr${i}`).value = MLB_2025.hr;
+    document.getElementById(`bb${i}`).value = MLB_2025.bb;
+    document.getElementById(`hbp${i}`).value = MLB_2025.hbp;
+    document.getElementById(`so${i}`).value = MLB_2025.so;
+    document.getElementById(`sh${i}`).value = MLB_2025.sh;
+    document.getElementById(`bunt${i}`).value = MLB_2025.bunt;
+    document.getElementById(`int${i}`).value = MLB_2025.int;
   }
-}
-
-function setVal(id, value) {
-  const el = document.getElementById(id);
-  if (el) el.value = value;
 }
 
 /***********************
@@ -65,7 +66,7 @@ function setVal(id, value) {
  ***********************/
 const RUN_PROB = {
   single_2B_to_home: [0.45, 0.58, 0.75],
-  single_1B_to_3B:   [0.20, 0.28, 0.45],
+  single_1B_to_3B: [0.20, 0.28, 0.45],
   double_1B_to_home: [0.45, 0.62, 0.85]
 };
 
@@ -79,17 +80,17 @@ function buildProb(i) {
     single: Number(document.getElementById(`s1_${i}`).value),
     double: Number(document.getElementById(`s2_${i}`).value),
     triple: Number(document.getElementById(`s3_${i}`).value),
-    homer:  Number(document.getElementById(`hr${i}`).value),
-    walk:   Number(document.getElementById(`bb${i}`).value),
-    hbp:    Number(document.getElementById(`hbp${i}`).value),
+    homer: Number(document.getElementById(`hr${i}`).value),
+    walk: Number(document.getElementById(`bb${i}`).value),
+    hbp: Number(document.getElementById(`hbp${i}`).value),
     strikeout: Number(document.getElementById(`so${i}`).value),
     sacBunt: Number(document.getElementById(`sh${i}`).value),
     buntHit: Number(document.getElementById(`bunt${i}`).value),
     interference: Number(document.getElementById(`int${i}`).value)
   };
 
-  let acc = 0;
   const probs = [];
+  let acc = 0;
 
   for (let k in events) {
     acc += events[k] / pa;
@@ -165,9 +166,9 @@ function simulateInning(batterIndex, probs) {
 
     else if (event === "sacBunt") {
       outs++;
-      if (bases[2]) newBases[2] = 1;
-      if (bases[1]) newBases[2] = 1;
       if (bases[0]) newBases[1] = 1;
+      if (bases[1]) newBases[2] = 1;
+      if (bases[2]) newBases[2] = 1;
     }
 
     else {
@@ -188,16 +189,39 @@ function runSimulation() {
   for (let i = 1; i <= 9; i++) probs.push(buildProb(i));
 
   let batterIndex = 0;
-  let totalScore = 0;
+  let gameScore = 0;
 
   for (let g = 0; g < 100; g++) {
     for (let inn = 0; inn < 9; inn++) {
       const res = simulateInning(batterIndex, probs);
-      totalScore += res.score;
+      gameScore += res.score;
       batterIndex = res.batterIndex;
     }
   }
 
-  document.getElementById("result").innerText =
-    `결과: 경기당 평균 득점 ${(totalScore / 100).toFixed(2)} 점`;
+  const avgGameScore = gameScore / 100;
+
+  runCount++;
+  totalRuns += avgGameScore;
+
+  document.getElementById("lastResult").innerText =
+    `이번 실행 결과: ${avgGameScore.toFixed(2)} 점`;
+
+  document.getElementById("avgResult").innerText =
+    `누적 평균: ${(totalRuns / runCount).toFixed(2)} 점`;
+
+  document.getElementById("countResult").innerText =
+    `실행 횟수: ${runCount}`;
+}
+
+/***********************
+ * 평균 초기화
+ ***********************/
+function resetAverage() {
+  totalRuns = 0;
+  runCount = 0;
+
+  document.getElementById("lastResult").innerText = "이번 실행 결과: -";
+  document.getElementById("avgResult").innerText = "누적 평균: -";
+  document.getElementById("countResult").innerText = "실행 횟수: 0";
 }
