@@ -7,15 +7,15 @@ for (let i = 1; i <= 9; i++) {
   const row = document.createElement("tr");
   row.innerHTML = `
     <td>${i}</td>
-    <td><input id="pa_${i}" value="600"></td>
-    <td><input id="single_${i}" value="86"></td>
-    <td><input id="double_${i}" value="25"></td>
-    <td><input id="triple_${i}" value="2"></td>
-    <td><input id="hr_${i}" value="19"></td>
-    <td><input id="bb_${i}" value="50"></td>
-    <td><input id="hbp_${i}" value="9"></td>
-    <td><input id="so_${i}" value="133"></td>
-    <td><input id="sh_${i}" value="2"></td>
+    <td><input id="pa_${i}" type="number" value="600"></td>
+    <td><input id="single_${i}" type="number" value="86"></td>
+    <td><input id="double_${i}" type="number" value="25"></td>
+    <td><input id="triple_${i}" type="number" value="2"></td>
+    <td><input id="hr_${i}" type="number" value="19"></td>
+    <td><input id="bb_${i}" type="number" value="50"></td>
+    <td><input id="hbp_${i}" type="number" value="9"></td>
+    <td><input id="so_${i}" type="number" value="133"></td>
+    <td><input id="sh_${i}" type="number" value="2"></td>
   `;
   tbody.appendChild(row);
 }
@@ -92,27 +92,19 @@ function simulateInning(batterIndex, probs) {
     const event = plateAppearance(probs[batter]);
     let newBases = [0, 0, 0];
 
-    // -------------------
     // 삼진
-    // -------------------
     if (event === "strikeout") {
       outs++;
     }
-
-    // -------------------
     // 더블플레이
-    // -------------------
     else if ((outs === 0 || outs === 1) && bases[0] && Math.random() < RUN_PROB.doublePlayProb) {
       outs += 2;
-      bases[0] = 0; // 1루 주자 아웃
-      if (bases[1]) newBases[2] = 1; // 2루 주자 → 3루
-      if (bases[2]) score++;          // 3루 주자 → 홈
+      bases[0] = 0;
+      if (bases[1]) newBases[2] = 1;
+      if (bases[2]) score++;
       continue;
     }
-
-    // -------------------
     // 단타
-    // -------------------
     else if (event === "single") {
       if (bases[2]) score++;
       if (bases[1]) {
@@ -125,10 +117,7 @@ function simulateInning(batterIndex, probs) {
       }
       newBases[0] = 1;
     }
-
-    // -------------------
     // 2루타
-    // -------------------
     else if (event === "double") {
       if (bases[2]) score++;
       if (bases[1]) score++;
@@ -138,34 +127,22 @@ function simulateInning(batterIndex, probs) {
       }
       newBases[1] = 1;
     }
-
-    // -------------------
     // 3루타
-    // -------------------
     else if (event === "triple") {
       score += bases[0] + bases[1] + bases[2];
       newBases[2] = 1;
     }
-
-    // -------------------
     // 홈런
-    // -------------------
     else if (event === "homer") {
       score += bases[0] + bases[1] + bases[2] + 1;
     }
-
-    // -------------------
-    // 볼넷/사구/희생번트
-    // -------------------
-    else if (["walk", "hbp", "sacBunt"].includes(event)) {
+    // 볼넷, 사구, 희생번트
+    else if (["walk","hbp","sacBunt"].includes(event)) {
       if (bases[0] && bases[1] && bases[2]) score++;
       newBases = [1, bases[0], bases[1]];
       if (event === "sacBunt") outs++;
     }
-
-    // -------------------
     // 일반 아웃
-    // -------------------
     else {
       outs++;
       if (bases[0] && Math.random() < RUN_PROB.out_1B_to_2B) newBases[1] = 1;
@@ -188,15 +165,23 @@ function simulateInning(batterIndex, probs) {
 let cumulativeScore = 0;
 let cumulativeCount = 0;
 
+// 1회 실행
 function runSimulation() {
+  const avg = runSimulationSingle();
+  cumulativeScore += avg;
+  cumulativeCount++;
+  document.getElementById("lastResult").innerText = `이번 실행 결과: ${avg.toFixed(2)} 점`;
+  document.getElementById("avgResult").innerText = `누적 평균: ${(cumulativeScore/cumulativeCount).toFixed(2)} 점`;
+  document.getElementById("countResult").innerText = `실행 횟수: ${cumulativeCount}`;
+}
+
+// 1회 100경기 × 9이닝
+function runSimulationSingle() {
   const probs = [];
-  for (let i = 1; i <= 9; i++) {
-    probs.push(buildProb(i));
-  }
+  for (let i = 1; i <= 9; i++) probs.push(buildProb(i));
 
   let batterIndex = 0;
   let totalScore = 0;
-
   for (let game = 0; game < 100; game++) {
     for (let inning = 0; inning < 9; inning++) {
       const res = simulateInning(batterIndex, probs);
@@ -204,15 +189,22 @@ function runSimulation() {
       batterIndex = res.batterIndex;
     }
   }
-
-  cumulativeScore += totalScore / 100;
-  cumulativeCount++;
-
-  document.getElementById("lastResult").innerText = `이번 실행 결과: 경기당 평균 ${ (totalScore/100).toFixed(2) } 점`;
-  document.getElementById("avgResult").innerText = `누적 평균: ${ (cumulativeScore / cumulativeCount).toFixed(2) } 점`;
-  document.getElementById("countResult").innerText = `실행 횟수: ${cumulativeCount}`;
+  return totalScore / 100;
 }
 
+// 100회 반복 실행
+function runSimulation100Times() {
+  let results = [];
+  for (let i = 0; i < 100; i++) {
+    results.push(runSimulationSingle());
+  }
+  const avg100 = results.reduce((a,b)=>a+b,0)/results.length;
+
+  document.getElementById("lastResult").innerText = `100회 마지막 실행 결과: ${results[results.length-1].toFixed(2)} 점`;
+  document.getElementById("avgResult").innerText = `100회 평균: ${avg100.toFixed(2)} 점`;
+}
+
+// 초기화
 function resetAverage() {
   cumulativeScore = 0;
   cumulativeCount = 0;
