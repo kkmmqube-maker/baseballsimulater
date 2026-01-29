@@ -23,15 +23,15 @@ const MLB_2025_AVG = { pa:600, s1:86, s2:25, s3:2, hr:19, bb:50, hbp:9, so:133, 
 
 function applyMLB2025Avg() {
   for (let i=1;i<=9;i++){
-    document.getElementById(`pa${i}`).value=MLB_2025_AVG.pa;
-    document.getElementById(`s1_${i}`).value=MLB_2025_AVG.s1;
-    document.getElementById(`s2_${i}`).value=MLB_2025_AVG.s2;
-    document.getElementById(`s3_${i}`).value=MLB_2025_AVG.s3;
-    document.getElementById(`hr${i}`).value=MLB_2025_AVG.hr;
-    document.getElementById(`bb${i}`).value=MLB_2025_AVG.bb;
-    document.getElementById(`hbp${i}`).value=MLB_2025_AVG.hbp;
-    document.getElementById(`so${i}`).value=MLB_2025_AVG.so;
-    document.getElementById(`sh${i}`).value=MLB_2025_AVG.sh;
+    document.getElementById(`pa${i}`).value = MLB_2025_AVG.pa;
+    document.getElementById(`s1_${i}`).value = MLB_2025_AVG.s1;
+    document.getElementById(`s2_${i}`).value = MLB_2025_AVG.s2;
+    document.getElementById(`s3_${i}`).value = MLB_2025_AVG.s3;
+    document.getElementById(`hr${i}`).value = MLB_2025_AVG.hr;
+    document.getElementById(`bb${i}`).value = MLB_2025_AVG.bb;
+    document.getElementById(`hbp${i}`).value = MLB_2025_AVG.hbp;
+    document.getElementById(`so${i}`).value = MLB_2025_AVG.so;
+    document.getElementById(`sh${i}`).value = MLB_2025_AVG.sh;
   }
   updateKwRC();
 }
@@ -43,7 +43,7 @@ const RUN_PROB = {
   double_1B_to_home:[0.45,0.62,0.85]
 };
 
-// ------------------ 확률 테이블 ------------------
+// ------------------ 확률 테이블 생성 ------------------
 function buildProb(i){
   const pa=Number(document.getElementById(`pa${i}`).value);
   const events={
@@ -122,7 +122,6 @@ function simulateInning(batterIndex,probs){
       if(event==="strikeout") outs++;
       else{
         outs++;
-        // 일반 아웃 주자 진루
         if(bases[2]&&Math.random()<0.05){ score++; bases[2]=0; }
         if(bases[1]&&Math.random()<0.20){ bases[2]=1; bases[1]=0; }
         if(bases[0]&&Math.random()<0.25){ bases[1]=1; bases[0]=0; }
