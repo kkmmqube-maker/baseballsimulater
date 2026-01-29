@@ -1,25 +1,22 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<title>MLB 공격 시뮬레이터</title>
-<style>
-  table { border-collapse: collapse; }
-  td, th { border: 1px solid #ccc; padding: 4px; text-align: center; }
-  button { margin: 5px; }
-  input { width: 50px; text-align: center; }
-</style>
+  <meta charset="UTF-8">
+  <title>MLB 공격 시뮬레이터</title>
+  <style>
+    table { border-collapse: collapse; }
+    td, th { border: 1px solid #ccc; padding: 4px; text-align: center; }
+    button { margin: 5px; }
+  </style>
 </head>
 <body>
 
-<h2>MLB 공격 시뮬레이터 (1~9번 타자 입력 + MLB 평균 + kwRC+)</h2>
+<h2>MLB 공격 시뮬레이터</h2>
 
-<div>
-  <button onclick="applyMLB2025Avg()">2025 MLB 평균 적용</button>
-  <button onclick="runSimulation()">1회 시뮬레이션 (100경기×9이닝)</button>
-  <button onclick="runSimulation100()">100회 시뮬레이션</button>
-  <button onclick="resetAverage()">누적 초기화</button>
-</div>
+<button onclick="applyMLB2025Avg()">2025 MLB 평균 적용</button>
+<button onclick="runSimulation()">1회 시뮬레이션 실행</button>
+<button onclick="runSimulation100()">100회 시뮬레이션 실행</button>
+<button onclick="resetAverage()">평균 초기화</button>
 
 <table>
   <thead>
@@ -34,15 +31,15 @@
       <th>HBP</th>
       <th>SO</th>
       <th>SH</th>
-      <th>kwRC+</th>
     </tr>
   </thead>
   <tbody id="batters"></tbody>
 </table>
 
 <h3 id="lastResult">이번 실행 결과: -</h3>
-<h3 id="avgResult">누적 평균: - / kwRC+: -</h3>
+<h3 id="avgResult">누적 평균: -</h3>
 <h3 id="countResult">실행 횟수: 0</h3>
+<h3 id="kwRCResult">kwRC+: -</h3>
 
 <script src="script.js"></script>
 </body>
