@@ -185,7 +185,7 @@ function runSimulation(repeat=1) {
   // =====================
   const gamma = 1.085;
   const sigma = 0.5405;
-  const delta = (totalScore/100) - 2.78;
+  const delta = avg - 2.78;
   const kwRC = 100 + Math.sign(delta) * Math.pow(Math.abs(delta)/sigma, gamma) * 100;
   document.getElementById("kwRCResult").innerText = `kwRC+: ${kwRC.toFixed(1)}`;
 }
